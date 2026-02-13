@@ -48,6 +48,14 @@ public class Register implements IRegister {
                     branchExecutor.execute();
                     this.index = branchExecutor.getIndex();
                 }
+                case "print" -> {
+                    Evaluator evaluator = new Evaluator(instruction.split("print")[1].strip());
+                    try {
+                        System.out.println(evaluator.eval());
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 default -> {
                     Evaluator evaluator = new Evaluator(instruction);
                     try {
