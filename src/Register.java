@@ -51,12 +51,12 @@ public class Register implements IRegister {
                 case "print" -> {
                     Evaluator evaluator = new Evaluator(instruction.split("print")[1].strip());
                     try {
-                        System.out.println(evaluator.eval());
+                        System.out.println(evaluator.eval().replace("\"", ""));
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
                 }
-                case "loop" -> {
+                case "while" -> {
 
                 }
                 default -> {
