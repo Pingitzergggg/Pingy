@@ -96,7 +96,7 @@ public class Evaluator {
                 i = nestedExpressionExtractor(i, iterable);
             } else if (Pattern.matches("^[0-9.]$", iterable[i])) {
                 if (!currentValue.isEmpty()) {
-                    if (isOperator(iterable[i-1])) {
+                    if (isOperator(Inspector.lookBehind(i, iterable)) || Inspector.lookBehind(i, iterable).equals(" ")) {
                         doesVariableKeyContainNumericOrBooleanValue = false;
                         nonMatchedOperatorExtractor(currentValue.toString());
                         currentValue.setLength(0);
@@ -116,7 +116,7 @@ public class Evaluator {
                 }
             } else if (iterable[i].equals("f") || iterable[i].equals("t")) {
                 if (!currentValue.isEmpty()) {
-                    if (isOperator(iterable[i-1])) {
+                    if (isOperator(Inspector.lookBehind(i, iterable)) || Inspector.lookBehind(i, iterable).equals(" ")) {
                         doesVariableKeyContainNumericOrBooleanValue = false;
                         nonMatchedOperatorExtractor(currentValue.toString());
                         currentValue.setLength(0);

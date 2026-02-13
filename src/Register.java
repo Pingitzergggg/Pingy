@@ -56,6 +56,9 @@ public class Register implements IRegister {
                         throw new RuntimeException(e);
                     }
                 }
+                case "loop" -> {
+
+                }
                 default -> {
                     Evaluator evaluator = new Evaluator(instruction);
                     try {

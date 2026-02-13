@@ -12,3 +12,4 @@ var @string ending = "this also ran down btw...";
 print "sex";
 print ending;
 print 1+2;
+print 1== 1;
