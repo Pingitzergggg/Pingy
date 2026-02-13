@@ -69,7 +69,7 @@ public class Evaluator {
     }
 
     private void problemStripper(String problem) throws ParseException {
-        String[] iterable = problem.split("");
+        String[] iterable = String.join("", problem.split(" ")).split("");
         StringBuilder currentValue = new StringBuilder();
         boolean doesVariableKeyContainNumericOrBooleanValue = false;
         if (logContent) {
