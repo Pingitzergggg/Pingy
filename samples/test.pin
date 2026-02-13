@@ -1,0 +1,10 @@
+var @int number = 12;
+
+if 13 < number {
+    12+34;
+    65*78;
+} elif 11 == number {
+    var @bool thisWasCreated = true;
+}
+
+var @string ending = "this also ran down btw...";
