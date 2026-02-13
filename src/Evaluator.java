@@ -452,22 +452,7 @@ public class Evaluator {
                     operation = "String comparison";
                 }
                 break;
-            case "++":
-                try {
-                    result = Double.toString(Double.parseDouble(a+=1));
-                    operation = "Increment";
-                } catch (Exception e) {
-                    System.out.println("cigany error");
-                }
-            case "--":
-                try {
-                    double number = Double.parseDouble(a);
-                    number = number - 1;
-                    result = Double.toString(number);
-                    operation = "Decrement";
-                } catch (Exception e) {
-                    System.out.println("cigany error");
-                }
+            
             case "<":
                 result = Boolean.toString(Double.parseDouble(a) < Double.parseDouble(b));
                 operation = "Smaller than comparison";
