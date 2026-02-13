@@ -57,7 +57,22 @@ public class Register implements IRegister {
                     }
                 }
                 case "while" -> {
-
+                    if (!Inspector.lookAhead(index, instructions).equals("{")) {
+                        throw new RuntimeException("while clause must be followed by '{'!");
+                    }
+                    ClauseExtractor scope = new ClauseExtractor(index+1, instructions, "{", "}");
+                    scope.extract();
+                    String condition = extractCondition(instruction);
+                    try {
+                        Evaluator conditionEval = new Evaluator(condition);
+                        while (Boolean.parseBoolean(conditionEval.eval())) {
+                            Register engine = new Register(scope.getOutput());
+                            engine.start();
+                        }
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                    this.index = scope.getIndex();
                 }
                 default -> {
                     Evaluator evaluator = new Evaluator(instruction);
@@ -68,5 +83,14 @@ public class Register implements IRegister {
                     }
                 }
             }
+    }
+
+    private String extractCondition(String instruction) {
+        StringBuilder condition = new StringBuilder();
+        String[] segments = instruction.strip().split(" ");
+        for (int i = 1; i < segments.length; i++) {
+            condition.append(segments[i]);
+        }
+        return condition.toString();
     }
 }
