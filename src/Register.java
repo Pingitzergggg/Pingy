@@ -1,5 +1,7 @@
 import java.text.ParseException;
 import java.util.LinkedList;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 
 interface IRegister {
     void start() throws RuntimeException;
@@ -60,14 +62,44 @@ public class Register implements IRegister {
                     if (!Inspector.lookAhead(index, instructions).equals("{")) {
                         throw new RuntimeException("while clause must be followed by '{'!");
                     }
-                    ClauseExtractor scope = new ClauseExtractor(index+1, instructions, "{", "}");
+                    ClauseExtractor scope = new ClauseExtractor(index + 1, instructions, "{", "}");
                     scope.extract();
                     String condition = extractCondition(instruction);
                     try {
-                        Evaluator conditionEval = new Evaluator(condition);
-                        while (Boolean.parseBoolean(conditionEval.eval())) {
+                        while (true) {
+                            Evaluator conditionEval = new Evaluator(condition);
+                            if (!Boolean.parseBoolean(conditionEval.eval())) {
+                                break;
+                            }
                             Register engine = new Register(scope.getOutput());
                             engine.start();
+                            for (Types type : Types.values()) {
+                                if (type == Types.STRING || type == Types.BOOL) continue;
+                                try {
+                                    Field storedField = Accessor.class.getDeclaredField("stored");
+                                    storedField.setAccessible(true);
+                                    // cigany
+                                    HashMap<Types, HashMap<String, Object>> stored = (HashMap<Types, HashMap<String, Object>>) storedField.get(accessor);
+                                    HashMap<String, Object> typeMap = stored.get(type);
+                                    for (String key : typeMap.keySet()) {
+                                        Object val = typeMap.get(key);
+                                        if (val instanceof String) {
+                                            String s = (String) val;
+                                            Object parsed = switch (type) {
+                                                case BYTE -> Byte.parseByte(s);
+                                                case SHORT -> Short.parseShort(s);
+                                                case INT -> Integer.parseInt(s);
+                                                case LONG -> Long.parseLong(s);
+                                                case FLOAT -> Float.parseFloat(s);
+                                                case DOUBLE -> Double.parseDouble(s);
+                                                default -> val;
+                                            };
+                                            typeMap.put(key, parsed);
+                                        }
+                                    }
+
+                                } catch (ReflectiveOperationException | NumberFormatException ignored) {}
+                            }
                         }
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
