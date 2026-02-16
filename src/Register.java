@@ -60,7 +60,7 @@ public class Register implements IRegister {
                 }
                 case "while" -> {
                     if (!Inspector.lookAhead(index, instructions).equals("{")) {
-                        throw new RuntimeException("while clause must be followed by '{'!");
+                        throw new RuntimeException("while clause must be followed by '{'");
                     }
                     ClauseExtractor scope = new ClauseExtractor(index + 1, instructions, "{", "}");
                     scope.extract();
@@ -78,7 +78,6 @@ public class Register implements IRegister {
                                 try {
                                     Field storedField = Accessor.class.getDeclaredField("stored");
                                     storedField.setAccessible(true);
-                                    // cigany
                                     HashMap<Types, HashMap<String, Object>> stored = (HashMap<Types, HashMap<String, Object>>) storedField.get(accessor);
                                     HashMap<String, Object> typeMap = stored.get(type);
                                     for (String key : typeMap.keySet()) {
@@ -97,7 +96,6 @@ public class Register implements IRegister {
                                             typeMap.put(key, parsed);
                                         }
                                     }
-
                                 } catch (ReflectiveOperationException | NumberFormatException ignored) {}
                             }
                         }

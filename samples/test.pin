@@ -1,10 +1,10 @@
 print "Hello, World!";
 
-var @int i = 1;
-while i <= 5 {
-    print i;
-    print "cycle ran";
-    i++;
-};
-
-
+var @double num = 99999.9;
+while num < 100000 {
+    print num;
+    if num == 99999.99 {
+        print "NIGGA";
+    }
+    num++;
+}
