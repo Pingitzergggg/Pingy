@@ -84,10 +84,10 @@ public class Accessor {
                 default:
                     try {
                         switch (type) {
-                            case "@byte" -> stored.get(Types.BYTE).put(key, Byte.parseByte(value));
-                            case "@short" -> stored.get(Types.SHORT).put(key, Short.parseShort(value));
-                            case "@int" -> stored.get(Types.INT).put(key, Integer.parseInt(value));
-                            case "@long" -> stored.get(Types.LONG).put(key, Long.parseLong(value));
+                            case "@byte" -> stored.get(Types.BYTE).put(key, Byte.parseByte(value.split("\\.")[0]));
+                            case "@short" -> stored.get(Types.SHORT).put(key, Short.parseShort(value.split("\\.")[0]));
+                            case "@int" -> stored.get(Types.INT).put(key, Integer.parseInt(value.split("\\.")[0]));
+                            case "@long" -> stored.get(Types.LONG).put(key, Long.parseLong(value.split("\\.")[0]));
                             case "@float" -> stored.get(Types.FLOAT).put(key, Float.parseFloat(value));
                             case "@double" -> stored.get(Types.DOUBLE).put(key, Double.parseDouble(value));
                             default -> throw new ParseException("Nonexisting type declaration "+type+"!", 0);
