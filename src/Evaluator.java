@@ -451,8 +451,8 @@ public class Evaluator {
                     result = Boolean.toString(a.equals(b));
                     operation = "String comparison";
                 }
-
                 break;
+            
             case "<":
                 result = Boolean.toString(Double.parseDouble(a) < Double.parseDouble(b));
                 operation = "Smaller than comparison";
