@@ -25,6 +25,20 @@ public class Register implements IRegister {
 
     private void execute(String instruction) throws RuntimeException {
         String[] instructionSet = instruction.strip().split(" ");
+        if (instruction.contains("=") && !instruction.startsWith("var") && !instruction.contains("==") && !instruction.contains("!=") && !instruction.contains("<=") && !instruction.contains(">=")) {
+            String[] parts = instruction.split("=", 2);
+            String varName = parts[0].strip();
+            if (accessor.doesExist(varName)) {
+                try {
+                    Evaluator evaluator = new Evaluator(parts[1].strip());
+                    accessor.overWriteValue(varName, evaluator.eval());
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+                return;
+            }
+        }
+        
             switch (instructionSet[0]) {
                 case "var" -> {
                     try {

@@ -6,5 +6,6 @@ public enum Types {
     DOUBLE,
     FLOAT,
     STRING,
-    BOOL
+    BOOL,
+    YOU
 }
