@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class Evaluator {
     private final boolean logContent;
 
-    private static final String[] operators = {"*", "/", "+", "-", "=", "<", ">", "&", "|", "^"};
+    private static final String[] operators = {"*", "/", "+", "-", "=", "<", ">", "&", "|", "^", "!"};
 
     private static final String[][] precedency = {
             {"*", "/"},

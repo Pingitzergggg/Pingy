@@ -1,13 +1,3 @@
-print "Hello, World!";
-
-var @double num1 = 1.0;
-print num1;
-num1 = 55;
-print num1;
-num1 = 5 + 999.0;
-print num1;
-
-var @string str = "pisi";
-print str;
-str = "kaka";
-print str;
+loop 2..=6 with i {
+    print "test "+i;
+}
