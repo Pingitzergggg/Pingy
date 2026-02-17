@@ -7,7 +7,7 @@
 print "Hello, World!";
 ```
 
-#### data types
+#### data type examples
 
 ###### string
 ```js
@@ -23,3 +23,10 @@ var  @int = 1;
 ```js
 var  @float = 1.0;
 ```
+
+###### double
+```js
+var @double = 1.000000001;
+```
+
+###### 
