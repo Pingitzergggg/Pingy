@@ -10,5 +10,4 @@ void main() throws ParseException {
     engine.start();
     Pool.getInstance().showOutputStream();
     Accessor.getInstance().printVariableTable();
-
 }
