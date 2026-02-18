@@ -202,7 +202,10 @@ loop i < 0 with i check before {
 
 you can also mix the keywords
 ```rust
+// the cycle variable i gets the starting value of 8
 loop 8..=100 with i by 5 check after {
-    // body
+    // each cycle the variable increments by 5
+    // the loop checks if if i is still less than 100
+    // repeats until i becomes greater than or equal to 100
 }
 ```
