@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 public class Accessor {
     public static final Pattern namingRestrictionPattern = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$");
+    public static final String[] illegalKeywords = {"inner", "var", "if", "else", "while", "for", "loop", "print"};
     private final HashMap<Types, HashMap<String, Object>> stored = new HashMap<>();
     private static final Accessor instance = new Accessor();
 
@@ -47,7 +48,13 @@ public class Accessor {
         }
     }
 
+    public void syntaxChecker(String key) throws IllegalArgumentException {
+        if (!namingRestrictionPattern.matcher(key).matches()) throw new IllegalArgumentException("Variable name "+key+" is illegal");
+        for (String keyword : illegalKeywords) if (key.equals(keyword)) throw new IllegalArgumentException("Variable name "+key+" overlaps with keyword table!");
+    }
+
     public void declare(String type, String key) throws ParseException {
+        syntaxChecker(key);
         String defaultValue = null;
         switch (type) {
             case "@byte", "@short", "@int", "@long" -> defaultValue = "0";
@@ -60,7 +67,7 @@ public class Accessor {
     }
 
     public void storeValue(String type, String key, String value) throws ParseException, IllegalArgumentException {
-        if (!namingRestrictionPattern.matcher(key).matches()) throw new IllegalArgumentException("Variable name "+key+" is illegal");
+        syntaxChecker(key);
         try {
             getValue(key);
             throw new IllegalArgumentException("Variable "+key+" already exists!");
@@ -100,15 +107,15 @@ public class Accessor {
         }
     }
 
-    public Object overWriteValue(String key, String value) throws ParseException {
+    public Object overWriteValue(String key, Object value) throws ParseException {
         try {
             switch (getType(key)) {
-                case BYTE -> Byte.parseByte(value);
-                case SHORT -> Short.parseShort(value);
-                case INT -> Integer.parseInt(value);
-                case LONG -> Long.parseLong(value);
-                case FLOAT -> Float.parseFloat(value);
-                case DOUBLE -> Double.parseDouble(value);
+                case BYTE -> Byte.parseByte(value.toString());
+                case SHORT -> Short.parseShort(value.toString());
+                case INT -> Integer.parseInt(value.toString());
+                case LONG -> Long.parseLong(value.toString());
+                case FLOAT -> Float.parseFloat(value.toString());
+                case DOUBLE -> Double.parseDouble(value.toString());
                 case BOOL -> {if(!(value.equals("false") || value.equals("true"))) throw new NumberFormatException("Boolean format exception!");}
             }
             Types type = getType(key);
@@ -120,39 +127,47 @@ public class Accessor {
         }
     }
 
+    public void removeValue(String key) {
+        if (doesExist(key)) {
+            stored.get(getType(key)).remove(key);
+        } else {
+            throw new IllegalArgumentException("Variable "+key+" does not exist!");
+        }
+    }
+
     public Object compoundModification(String key, CompoundAssignmentTypes type, String quantity, boolean eagerWriting) throws ParseException, ArithmeticException {
         double original;
         double modified;
         switch(getType(key)) {
             case BYTE:
-                original = (byte) getValue(key);
-                modified = (byte) assignNumericValue(original, Byte.parseByte(quantity), type);
-                overWriteValue(key, Byte.toString((byte) modified));
+                original = ((Number) getValue(key)).byteValue();
+                modified = (byte) assignNumericValue(original, Double.parseDouble(quantity), type);
+                overWriteValue(key, (byte) modified);
                 return eagerWriting ? getValue(key) : original;
             case SHORT:
-                original = (short) getValue(key);
-                modified = (short) assignNumericValue(original, Short.parseShort(quantity), type);
-                overWriteValue(key, Short.toString((short) modified));
+                original = ((Number) getValue(key)).shortValue();
+                modified = (short) assignNumericValue(original, Double.parseDouble(quantity), type);
+                overWriteValue(key, (short) modified);
                 return eagerWriting ? getValue(key) : original;
             case INT:
-                original = (int) getValue(key);
-                modified = (int) assignNumericValue(original, Integer.parseInt(quantity), type);
-                overWriteValue(key, Integer.toString((int) modified));
+                original = ((Number) getValue(key)).intValue();
+                modified = (int) assignNumericValue(original, Double.parseDouble(quantity), type);
+                overWriteValue(key, (int) modified);
                 return eagerWriting ? getValue(key) : original;
             case LONG:
-                original = (long) getValue(key);
-                modified = (long) assignNumericValue(original, Long.parseLong(quantity), type);
-                overWriteValue(key, Long.toString((long) modified));
+                original = ((Number) getValue(key)).longValue();
+                modified = (long) assignNumericValue(original, Double.parseDouble(quantity), type);
+                overWriteValue(key, (long) modified);
                 return eagerWriting ? getValue(key) : original;
             case FLOAT:
-                original = (float) getValue(key);
-                modified = (float) assignNumericValue(original, Float.parseFloat(quantity), type);
-                overWriteValue(key, Float.toString((float) modified));
+                original = ((Number) getValue(key)).floatValue();
+                modified = (float) assignNumericValue(original, Double.parseDouble(quantity), type);
+                overWriteValue(key, (float) modified);
                 return eagerWriting ? getValue(key) : original;
             case DOUBLE:
-                original = (double) getValue(key);
+                original = ((Number) getValue(key)).doubleValue();
                 modified = (double) assignNumericValue(original, Double.parseDouble(quantity), type);
-                overWriteValue(key, Double.toString((double) modified));
+                overWriteValue(key, (double) modified);
                 return eagerWriting ? getValue(key) : original;
             case STRING:
                 overWriteValue(

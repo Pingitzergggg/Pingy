@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class Evaluator {
     private final boolean logContent;
 
-    private static final String[] operators = {"*", "/", "+", "-", "=", "<", ">", "&", "|", "^"};
+    private static final String[] operators = {"*", "/", "+", "-", "=", "<", ">", "&", "|", "^", "!"};
 
     private static final String[][] precedency = {
             {"*", "/"},
@@ -59,7 +59,7 @@ public class Evaluator {
         if (result.equals("false") || result.equals("true")) {
             if (logContent) System.out.println("@bool result detected!");
             return Types.BOOL;
-        } else if (Pattern.matches("^(0|[1-9])[0-9]*(\\.[0-9]*)?$", result)) {
+        } else if (Pattern.matches("^[+\\-]?(0|0\\.0|([1-9][0-9]*(\\.[0-9]+)?))$", result)) {
             if (logContent) System.out.println("@double result detected!");
             return Types.DOUBLE;
         } else {

@@ -9,6 +9,7 @@ interface IRegister {
 
 public class Register implements IRegister {
     private static final Accessor accessor = Accessor.getInstance();
+    private static final Pool standardPool = Pool.getInstance();
     private LinkedList<String> instructions = new LinkedList<>();
     private int index = 0;
 
@@ -64,10 +65,19 @@ public class Register implements IRegister {
                     branchExecutor.execute();
                     this.index = branchExecutor.getIndex();
                 }
+                case "loop" -> {
+                    try {
+                        Cycler cycleExecutor = new Cycler(index, instructions);
+                        cycleExecutor.execute();
+                        this.index = cycleExecutor.getIndex();
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e.toString());
+                    }
+                }
                 case "print" -> {
                     Evaluator evaluator = new Evaluator(instruction.split("print")[1].strip());
                     try {
-                        System.out.println(evaluator.eval().replace("\"", ""));
+                        standardPool.printToOutputStream(evaluator.eval().replace("\"", ""));
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
