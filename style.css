@@ -1,1 +1,6 @@
-.gangnam {}
+.gangnam {
+    background: url("https://i.pinimg.com/originals/1c/8b/0e/1c8b0e5a9d2f3a7c9e4f1c6e5b2a9d.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    background-color: aliceblue;
+}
