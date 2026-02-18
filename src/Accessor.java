@@ -59,7 +59,7 @@ public class Accessor {
         switch (type) {
             case "@byte", "@short", "@int", "@long" -> defaultValue = "0";
             case "@float", "@double" -> defaultValue = "0.0";
-            case "@string" -> defaultValue = "";
+            case "@string" -> defaultValue = "\"\"";
             case "@bool" -> defaultValue = "false";
             default -> throw new ParseException("Nonexisting type declaration "+type+"!", 0);
         }

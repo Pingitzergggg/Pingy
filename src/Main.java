@@ -9,5 +9,5 @@ void main() throws ParseException {
     Register engine = new Register(source.getCodeBase());
     engine.start();
     Pool.getInstance().showOutputStream();
-    Accessor.getInstance().printVariableTable();
+    // Accessor.getInstance().printVariableTable();
 }

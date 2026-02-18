@@ -1,29 +1,17 @@
 print "Hello, World!";
 
-var @double num1 = 1.0;
-print num1;
-num1 = 55;
-print num1;
-num1 = 5 + 999.0;
-print num1;
-
-var @string str = "pisi";
-print str;
-str = "kaka";
-print str;
-
-
-print 1 == 1;
-print 2 == 3;
-print 1 > 2;
-print "nigga" == "nigga";
-
-var @int a = 3;
-
-if a == 1 {
-    print "NI";
-} else if a == 2 {
-    print "GG";
-} else {
-    print "ER";
+print "-------------------------";
+loop i < 0 with i check after {
+    print "AFTER";
 }
+print "-------------------------";
+loop i < 0 with i check before {
+    print "BEFORE";
+}
+
+loop 6..=7 with i check before {
+
+}
+
+var @string meo;
+

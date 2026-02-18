@@ -108,6 +108,7 @@ public class Register implements IRegister {
                                         Object val = typeMap.get(key);
                                         if (val instanceof String) {
                                             String s = (String) val;
+                                            // REDUNDANCY ALERT HALO HALO
                                             Object parsed = switch (type) {
                                                 case BYTE -> Byte.parseByte(s);
                                                 case SHORT -> Short.parseShort(s);
