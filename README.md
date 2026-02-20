@@ -133,7 +133,7 @@ if statement {
     // false branch
 }
 ```
-- You can also use `elif` to create multiple branches with different statements
+- You can also use `elif` to create multiple branches with different conditions
 ```py
 if statement {
 
