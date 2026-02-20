@@ -1,3 +1,5 @@
+package pingy;
+
 import java.util.LinkedList;
 
 public class ClauseExtractor {

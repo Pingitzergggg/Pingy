@@ -1,3 +1,5 @@
+package pingy;
+
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,9 +12,7 @@ public class Accessor {
     private static final Accessor instance = new Accessor();
 
     private Accessor() {
-        for (Types type : Types.values()) {
-            stored.put(type, new HashMap<>());
-        }
+        clearTable();
     }
 
     public static Accessor getInstance() {
@@ -228,6 +228,13 @@ public class Accessor {
         System.out.println("@"+type.toString().toLowerCase()+separator);
         for (String row : rows) {
             System.out.println("\t"+row);
+        }
+    }
+
+    public void clearTable() {
+        stored.clear();
+        for (Types type : Types.values()) {
+            stored.put(type, new HashMap<>());
         }
     }
 }

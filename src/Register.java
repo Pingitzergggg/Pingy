@@ -1,10 +1,12 @@
+package pingy;
+
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
 interface IRegister {
-    void start() throws RuntimeException;
+    void start() throws RuntimeException, InterruptedException;
 }
 
 public class Register implements IRegister {
@@ -18,13 +20,14 @@ public class Register implements IRegister {
     }
 
     @Override
-    public void start() throws RuntimeException {
+    public void start() throws RuntimeException, InterruptedException {
+        if (Thread.currentThread().isInterrupted()) throw new InterruptedException("Interpreter terminated!");
         for (; index < instructions.size(); ++index) {
             execute(instructions.get(index));
         }
     }
 
-    private void execute(String instruction) throws RuntimeException {
+    private void execute(String instruction) throws RuntimeException, InterruptedException {
         String[] instructionSet = instruction.strip().split(" ");
         if (instruction.contains("=") && !instruction.startsWith("var") && !instruction.contains("==") && !instruction.contains("!=") && !instruction.contains("<=") && !instruction.contains(">=")) {
             String[] parts = instruction.split("=", 2);
@@ -77,7 +80,7 @@ public class Register implements IRegister {
                 case "print" -> {
                     Evaluator evaluator = new Evaluator(instruction.split("print")[1].strip());
                     try {
-                        standardPool.printToOutputStream(evaluator.eval().replace("\"", ""));
+                        standardPool.printToOutputStream(evaluator.eval().replace("\"", "")+"\n");
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -108,7 +111,6 @@ public class Register implements IRegister {
                                         Object val = typeMap.get(key);
                                         if (val instanceof String) {
                                             String s = (String) val;
-                                            // REDUNDANCY ALERT HALO HALO
                                             Object parsed = switch (type) {
                                                 case BYTE -> Byte.parseByte(s);
                                                 case SHORT -> Short.parseShort(s);

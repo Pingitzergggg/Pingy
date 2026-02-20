@@ -1,3 +1,5 @@
+package pingy;
+
 public enum CompoundAssignmentTypes {
     ADD,
     SUBTRACT,

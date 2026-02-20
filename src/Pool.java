@@ -1,21 +1,24 @@
+package pingy;
+
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Pool {
-    private final LinkedList<String> output = new LinkedList<>();
-    private final LinkedList<String> error = new LinkedList<>();
-    private final LinkedList<String> debug = new LinkedList<>();
+    private final ConcurrentLinkedQueue<String> output = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<String> error = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<String> debug = new ConcurrentLinkedQueue<>();
 
     private final static Pool instance = new Pool();
 
     private Pool() {
-        printAll("Pingy interpreter running on version 1.1 (Java build)\n");
+        clearPools();
     }
 
     public static Pool getInstance() {return instance;}
 
-    public LinkedList<String> getOutputStream() {return this.output;}
-    public LinkedList<String> getErrorStream() {return this.error;}
-    public LinkedList<String> getDebugStream() {return this.debug;}
+    public ConcurrentLinkedQueue<String> getOutputStream() {return this.output;}
+    public ConcurrentLinkedQueue<String> getErrorStream() {return this.error;}
+    public ConcurrentLinkedQueue<String> getDebugStream() {return this.debug;}
 
     public void printToOutputStream(Object value) {
         output.add(value.toString());
@@ -51,5 +54,12 @@ public class Pool {
         for (Object value : debug) {
             System.out.println(value);
         }
+    }
+
+    public void clearPools() {
+        output.clear();
+        error.clear();
+        debug.clear();
+        printAll("Pingy interpreter running on version 1.1 (Java build)\n");
     }
 }

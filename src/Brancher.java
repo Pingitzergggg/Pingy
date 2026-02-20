@@ -1,3 +1,5 @@
+package pingy;
+
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -21,7 +23,7 @@ public class Brancher {
         }
     }
 
-    public void execute() throws RuntimeException {
+    public void execute() throws RuntimeException, InterruptedException {
         for (HashMap<String, Object> subBranch : branch) {
             if (subBranch.get("condition") != null) {
                 Evaluator condition = new Evaluator(subBranch.get("condition").toString());
