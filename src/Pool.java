@@ -1,5 +1,3 @@
-package pingy;
-
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -23,14 +21,24 @@ public class Pool {
     public void printToOutputStream(Object value) {
         output.add(value.toString());
     }
+    public void printToOutputStreamNoLineBreak(Object value) {
+        output.add(value.toString());
+    }
 
     public void printToErrorStream(Object value) {
+        error.add(value.toString());
+    }
+    public void printToErrorStreamNoLineBreak(Object value) {
         error.add(value.toString());
     }
 
     public void printToDebugStream(Object value) {
         debug.add(value.toString());
     }
+    public void printToDebugStreamNoLineBreak(Object value) {
+        debug.add(value.toString());
+    }
+
 
     public void printAll(Object value) {
         output.add(value.toString());

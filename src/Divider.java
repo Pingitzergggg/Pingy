@@ -1,5 +1,3 @@
-package pingy;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
@@ -16,6 +14,7 @@ public class Divider {
             Scanner scn = new Scanner(new File(filePath));
             while (scn.hasNextLine()) {
                 input.append(scn.nextLine());
+                input.append("\n");
             }
             fileContent = input.toString();
             divide();
@@ -31,13 +30,14 @@ public class Divider {
                 codeBase.add(expression.toString());
                 expression.setLength(0);
                 codeBase.add(character);
-            } else if (character.equals(";")) {
+            } else if (character.equals(";") || character.equals("\n")) {
                 codeBase.add(expression.toString());
                 expression.setLength(0);
             } else {
                 expression.append(character);
             }
         }
+        codeBase.add(expression.toString());
     }
 
     public String getFileContent() {

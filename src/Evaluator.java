@@ -1,5 +1,3 @@
-package pingy;
-
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -7,6 +5,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class Evaluator {
+    private final Pool debugStream = Pool.getInstance();
+    private final Pool errorStream = Pool.getInstance();
     private final boolean logContent;
 
     private static final String[] operators = {"*", "/", "+", "-", "=", "<", ">", "&", "|", "^", "!"};
@@ -14,7 +14,7 @@ public class Evaluator {
     private static final String[][] precedency = {
             {"*", "/"},
             {"+", "-"},
-            {"==", "<", ">", "<=", ">=", "!="},
+            {"==", "<", ">", "<=", ">=", "!=", "!"},
             {"&&", "||", "^^"}
     };
 
@@ -33,23 +33,23 @@ public class Evaluator {
 
     public String eval() throws ParseException {
         if (logContent) {
-            System.out.println("Main poblem: "+problem+"\n");
+            debugStream.printToDebugStream("Main poblem: "+problem+"\n");
         }
         problemStripper(problem);
         precedencyChecker();
         if (!strippedProblem.isEmpty()) {
-            if (logContent) System.out.println("\nstrippedProblem: "+strippedProblem);
+            if (logContent) debugStream.printToDebugStream("\nstrippedProblem: "+strippedProblem);
             if (returnTypeRecognizer() == Types.STRING) {
-                if (logContent) System.out.println("Final result: \""+strippedProblem.getFirst()+"\"");
+                if (logContent) debugStream.printToDebugStream("Final result: \""+strippedProblem.getFirst()+"\"");
                 return "\""+strippedProblem.getFirst()+"\"";
             } else {
-                if (logContent) System.out.println("Final result: "+strippedProblem.getFirst());
+                if (logContent) debugStream.printToDebugStream("Final result: "+strippedProblem.getFirst());
                 return strippedProblem.getFirst();
             }
         } else {
             if (logContent) {
-                System.out.println("\nstrippedProblem: "+strippedProblem);
-                System.out.println("Final result: null");
+                debugStream.printToDebugStream("\nstrippedProblem: "+strippedProblem);
+                debugStream.printToDebugStream("Final result: null");
             }
             return null;
         }
@@ -59,13 +59,13 @@ public class Evaluator {
         if (strippedProblem.size() != 1) throw new RuntimeException("Calculation failed!");
         String result = strippedProblem.getFirst();
         if (result.equals("false") || result.equals("true")) {
-            if (logContent) System.out.println("@bool result detected!");
+            if (logContent) debugStream.printToDebugStream("@bool result detected!");
             return Types.BOOL;
         } else if (Pattern.matches("^[+\\-]?(0|0\\.0|([1-9][0-9]*(\\.[0-9]+)?))$", result)) {
-            if (logContent) System.out.println("@double result detected!");
+            if (logContent) debugStream.printToDebugStream("@double result detected!");
             return Types.DOUBLE;
         } else {
-            if (logContent) System.out.println("@string result detected!");
+            if (logContent) debugStream.printToDebugStream("@string result detected!");
             return Types.STRING;
         }
     }
@@ -75,7 +75,7 @@ public class Evaluator {
         StringBuilder currentValue = new StringBuilder();
         boolean doesVariableKeyContainNumericOrBooleanValue = false;
         if (logContent) {
-            System.out.println("Extracting elements...");
+            debugStream.printToDebugStream("Extracting elements...");
         }
         for (int i = 0; i < iterable.length; i++) {
             if (iterable[i].equals("\"")) {
@@ -86,7 +86,7 @@ public class Evaluator {
                 i = typeExtractor(i, iterable, (character) -> (character.equals("\"")), true);
 
                 if (logContent) {
-                    System.out.println("String literal detected!\nExtracted value: \""+strippedProblem.getLast()+"\"");
+                    debugStream.printToDebugStream("String literal detected!\nExtracted value: \""+strippedProblem.getLast()+"\"");
                 }
             } else if (iterable[i].equals("(")) {
 
@@ -113,7 +113,7 @@ public class Evaluator {
 
                 if (logContent) {
                     if (!strippedProblem.isEmpty()) {
-                        System.out.println("Numeric literal detected!\nExtracted value: "+strippedProblem.getLast());
+                        debugStream.printToDebugStream("Numeric literal detected!\nExtracted value: "+strippedProblem.getLast());
                     }
                 }
             } else if (iterable[i].equals("f") || iterable[i].equals("t")) {
@@ -140,7 +140,7 @@ public class Evaluator {
                             if (j == (seekTrue ? i+3 : i+4)
                                     && !isOperator(Inspector.lookAhead(j, iterable))
                                     && !Pattern.matches("^[()\"]$", Inspector.lookAhead(j, iterable))) {
-                                System.out.println("this ran");
+                                debugStream.printToDebugStream("this ran");
                                 boolPattern.setLength(0);
                             }
                         }
@@ -151,13 +151,13 @@ public class Evaluator {
                         appender(boolPattern.toString());
                         i = i+3;
                         if (logContent) {
-                            System.out.println("Boolean literal detected!\nExtracted value: "+boolPattern.toString());
+                            debugStream.printToDebugStream("Boolean literal detected!\nExtracted value: "+boolPattern.toString());
                         }
                     } else if (boolPattern.toString().equals("false")) {
                         appender(boolPattern.toString());
                         i = i+4;
                         if (logContent) {
-                            System.out.println("Boolean literal detected!\nExtracted value: "+boolPattern.toString());
+                            debugStream.printToDebugStream("Boolean literal detected!\nExtracted value: "+boolPattern.toString());
                         }
                     } else {
                         if (!iterable[i].equals(" ")) currentValue.append(iterable[i]);
@@ -181,12 +181,12 @@ public class Evaluator {
             if (iterable[i].equals(")")) {
                 if (unresolvedParenthesesPairs == 0) {
                     if (logContent) {
-                        System.out.println("Open parenthesis found!\n\nRecursion for parentheses fallback begin...");
+                        debugStream.printToDebugStream("Open parenthesis found!\n\nRecursion for parentheses fallback begin...");
                     }
                     Evaluator parenthesesExtractor = new Evaluator(currentValue.toString(), logContent);
                     appender(parenthesesExtractor.eval());
                     if (logContent) {
-                        System.out.println("End of recursion\nStepback to: "+problem+"\n");
+                        debugStream.printToDebugStream("End of recursion\nStepback to: "+problem+"\n");
                     }
                     currentValue.setLength(0);
                     return i;
@@ -255,7 +255,7 @@ public class Evaluator {
                 if (!operator.isEmpty()) {
                     appender(operator);
                     if (logContent) {
-                        System.out.println("Operator detected!\nExtracted value: "+operator);
+                        debugStream.printToDebugStream("Operator detected!\nExtracted value: "+operator);
                     }
                 }
             } else {
@@ -305,13 +305,13 @@ public class Evaluator {
                 ).toString();
                 appender(value);
                 if (logContent) {
-                    System.out.println("Variable with compound assignment detected!\nExtracted key: "+key+", Extracted value: "+value+" compound mode: "+compoundMode.toString()+" eagerWriting: "+eagerWriting);
+                    debugStream.printToDebugStream("Variable with compound assignment detected!\nExtracted key: "+key+", Extracted value: "+value+" compound mode: "+compoundMode.toString()+" eagerWriting: "+eagerWriting);
                 }
             } else {
                 String value = Accessor.getInstance().getValue(key).toString();
                 appender(value);
                 if (logContent) {
-                    System.out.println("Variable detected!\nExtracted key: "+key+", Extracted value: "+value);
+                    debugStream.printToDebugStream("Variable detected!\nExtracted key: "+key+", Extracted value: "+value);
                 }
             }
         } else {
@@ -336,13 +336,13 @@ public class Evaluator {
 
     private void precedencyChecker() {
         if (logContent) {
-            System.out.println("\nEvaluator calculation log: ");
-            System.out.print("Base problem: ");
+            debugStream.printToDebugStream("\nEvaluator calculation log: ");
+            debugStream.printToDebugStreamNoLineBreak("Base problem: ");
             printContents(true);
         }
         for (int p = 0; p < precedency.length; p++) {
             if (logContent) {
-                System.out.println("\nLooking for layer "+p+" operators...");
+                debugStream.printToDebugStream("\nLooking for layer "+p+" operators...");
             }
             while (containsOperatorInLayer(strippedProblem, p)) {
                 for (int i = 0; i < strippedProblem.size(); i++) {
@@ -357,20 +357,22 @@ public class Evaluator {
                                 strippedProblem.add(i, sign);
                                 if (logContent) {
                                     printContents(false);
-                                    System.out.println(" - Prefix signs aligned");
+                                    debugStream.printToDebugStream(" - Prefix signs aligned");
                                 }
                                 break;
                             }
                         }
                         result = calculate(
-                                    (i == 0 ? null : strippedProblem.get(i - 1)),
+                                    (i == 0 || strippedProblem.get(i).equals("!") ? null : strippedProblem.get(i - 1)),
                                     strippedProblem.get(i + 1),
                                     strippedProblem.get(i)
                                 );
-                        for (int j = 0; j < (i==0 ? 2 : 3); j++) {
+
+                        boolean twoDigiOperation = i==0 || strippedProblem.get(i).equals("!");
+                        for (int j = 0; j < (twoDigiOperation ? 2 : 3); j++) {
                             strippedProblem.remove((i==0 ? i : i - 1));
                         }
-                        strippedProblem.add((i==0 ? i : i - 1),result);
+                        strippedProblem.add((twoDigiOperation ? i : i - 1),result);
                         break;
                     }
                 }
@@ -481,6 +483,16 @@ public class Evaluator {
                 }
 
                 break;
+            case "!":
+                if (b.equals("false") || b.equals("true")) {
+                    result = Boolean.toString(!Boolean.parseBoolean(b));
+                    operation = "Logical Negation";
+                    break;
+                } else {
+                    errorStream.printToErrorStream("Value "+b+" is not a @bool literal!");
+                    throw new NumberFormatException("Value "+b+" is not a @bool literal!");
+                }
+
             case "||":
                 result = Boolean.toString(Boolean.parseBoolean(a) || Boolean.parseBoolean(b));
                 operation = "Logical OR";
@@ -499,7 +511,7 @@ public class Evaluator {
         }
         if (logContent) {
             printContents(false);
-            System.out.println(" - "+operation+" performed");
+            debugStream.printToDebugStream(" - "+operation+" performed");
         }
         return result;
     }
@@ -517,14 +529,14 @@ public class Evaluator {
     }
 
     private void printContents(boolean lineBreak) {
-        System.out.print("[");
+        debugStream.printToDebugStreamNoLineBreak("[");
         for (String i : strippedProblem) {
-            System.out.print(i+", ");
+            debugStream.printToDebugStreamNoLineBreak(i+", ");
         }
         if (lineBreak) {
-            System.out.print("]\n");
+            debugStream.printToDebugStreamNoLineBreak("]\n");
         } else {
-            System.out.print("]");
+            debugStream.printToDebugStreamNoLineBreak("]");
         }
     }
 }

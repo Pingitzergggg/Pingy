@@ -1,5 +1,3 @@
-package pingy;
-
 import java.io.File;
 import java.text.ParseException;
 
@@ -23,6 +21,17 @@ public class Main extends Thread {
         } catch (InterruptedException e) {
             Pool.getInstance().printToErrorStream("InterruptError: Session terminated!");
             throw new RuntimeException(e);
+        } finally {
+            System.out.println("stddout: ");
+            Pool.getInstance().showOutputStream();
+            System.out.println("Debug: ");
+            Pool.getInstance().showDebugStream();
+            Accessor.getInstance().printVariableTable();
         }
     }
+}
+
+void main() {
+    var interpreter = new Main(new File("./samples/test.pin"));
+    interpreter.start();
 }

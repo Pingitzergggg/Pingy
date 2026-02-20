@@ -1,6 +1,5 @@
-package pingy;
-
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -29,25 +28,13 @@ public class Register implements IRegister {
 
     private void execute(String instruction) throws RuntimeException, InterruptedException {
         String[] instructionSet = instruction.strip().split(" ");
-        if (instruction.contains("=") && !instruction.startsWith("var") && !instruction.contains("==") && !instruction.contains("!=") && !instruction.contains("<=") && !instruction.contains(">=")) {
-            String[] parts = instruction.split("=", 2);
-            String varName = parts[0].strip();
-            if (accessor.doesExist(varName)) {
-                try {
-                    Evaluator evaluator = new Evaluator(parts[1].strip());
-                    accessor.overWriteValue(varName, evaluator.eval());
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-                return;
-            }
-        }
-        
+
+        if (!instruction.contains("#") && !instruction.contains("//")) {
             switch (instructionSet[0]) {
                 case "var" -> {
                     try {
                         if (instruction.contains("=")) {
-                            Evaluator evaluator = new Evaluator(instruction.split("=")[1].strip());
+                            Evaluator evaluator = new Evaluator(instruction.split("=", 2)[1].strip(), true);
                             accessor.storeValue(
                                     instructionSet[1],
                                     instructionSet[2],
@@ -132,14 +119,28 @@ public class Register implements IRegister {
                     this.index = scope.getIndex();
                 }
                 default -> {
-                    Evaluator evaluator = new Evaluator(instruction);
-                    try {
-                        evaluator.eval();
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
+                    if (instruction.contains("=")) {
+                        String[] parts = instruction.split("=", 2);
+                        String varName = parts[0].strip();
+                        if (accessor.doesExist(varName)) {
+                            try {
+                                Evaluator evaluator = new Evaluator(parts[1].strip());
+                                accessor.overWriteValue(varName, evaluator.eval());
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    } else {
+                        Evaluator evaluator = new Evaluator(instruction);
+                        try {
+                            evaluator.eval();
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             }
+        }
     }
 
     private String extractCondition(String instruction) {

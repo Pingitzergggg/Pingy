@@ -1,17 +1,9 @@
-print "Hello, World!";
+print "sexer";
 
-print "-------------------------";
-loop i < 0 with i check after {
-    print "AFTER";
-}
-print "-------------------------";
-loop i < 0 with i check before {
-    print "BEFORE";
-}
+# this is comment
 
-loop 6..=7 with i check before {
+// this is another comment
 
-}
+print "asder";
 
-var @string meo;
-
+var @bool test = !(45==6);

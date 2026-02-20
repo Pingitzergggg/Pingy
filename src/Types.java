@@ -1,5 +1,3 @@
-package pingy;
-
 public enum Types {
     BYTE,
     SHORT,

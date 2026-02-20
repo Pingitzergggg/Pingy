@@ -1,5 +1,3 @@
-package pingy;
-
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
