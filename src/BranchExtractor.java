@@ -11,7 +11,7 @@ public class BranchExtractor {
         this.instructions = instructions;
     }
 
-    public void extract() {
+    public void extract() throws UnresolvedClauseException {
         for (int i = index; i < instructions.size(); i++) {
             ClauseExtractor scope = new ClauseExtractor(i+1, instructions, "{", "}");
             BranchTypes type = null;

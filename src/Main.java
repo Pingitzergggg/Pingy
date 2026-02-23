@@ -21,6 +21,9 @@ public class Main extends Thread {
         } catch (InterruptedException e) {
             Pool.getInstance().printToErrorStream("InterruptError: Session terminated!");
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            Pool.getInstance().showErrorStream();
+            throw new RuntimeException(e.toString());
         } finally {
             System.out.println("stddout: ");
             Pool.getInstance().showOutputStream();

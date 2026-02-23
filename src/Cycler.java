@@ -17,7 +17,7 @@ public class Cycler {
     private double slope;
     private LinkedList<String> scope;
 
-    public Cycler(int index, LinkedList<String> instructions) throws ParseException {
+    public Cycler(int index, LinkedList<String> instructions) throws ParseException, NonexistentVariableException, IllegalVariableNameException, UnresolvedClauseException {
         CycleExtractor extractor = new CycleExtractor(index, instructions);
         extractor.extract();
         System.out.println(extractor.getOutput());
@@ -27,7 +27,7 @@ public class Cycler {
         parseEnvVar();
     }
     
-    public void execute() throws ParseException, InterruptedException {
+    public void execute() throws ParseException, InterruptedException, NonexistentVariableException, CompoundAssignmentException {
         while (true) {
 //            System.out.println("Iterating...\nCondition: "+condition+"\nWith: "+cycleVariable+" bound: "+variableBinding+"\nBy: "+slope+"\nScope: "+scope+"\nCheck later: "+afterTesting);
             if (executionToken) {
@@ -44,7 +44,7 @@ public class Cycler {
         }
     }
 
-    private void parseCondition() throws ParseException {
+    private void parseCondition() throws ParseException, CompoundAssignmentException, NonexistentVariableException {
         Object value = output.get("condition");
         if (value == null || value.equals("")) {
             condition = "true";
@@ -77,7 +77,7 @@ public class Cycler {
         }
     }
 
-    private void parseEnvVar() throws ParseException {
+    private void parseEnvVar() throws ParseException, NonexistentVariableException, IllegalVariableNameException {
         Object value = output.get("with");
         if (value != null) {
             if (!accessor.doesExist(value.toString())) {
@@ -111,7 +111,7 @@ public class Cycler {
         }
     }
 
-    private void iterateFirst() throws ParseException, InterruptedException {
+    private void iterateFirst() throws ParseException, InterruptedException, NonexistentVariableException, CompoundAssignmentException {
         Register engine = new Register(scope);
         engine.start();
         if (accessor.doesExist(cycleVariable.toString())) {
@@ -126,7 +126,7 @@ public class Cycler {
         }
     }
 
-    private void iterate() throws ParseException, InterruptedException {
+    private void iterate() throws ParseException, InterruptedException, CompoundAssignmentException, NonexistentVariableException {
         Evaluator evaluator = new Evaluator(condition);
         String result = evaluator.eval();
         if (result.equals("false")) {

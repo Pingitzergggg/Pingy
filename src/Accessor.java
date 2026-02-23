@@ -1,12 +1,14 @@
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 public class Accessor {
     public static final Pattern namingRestrictionPattern = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$");
     public static final String[] illegalKeywords = {"inner", "var", "if", "else", "while", "for", "loop", "print"};
     private final HashMap<Types, HashMap<String, Object>> stored = new HashMap<>();
+    private final Pool standardPool = Pool.getInstance();
     private static final Accessor instance = new Accessor();
 
     private Accessor() {
@@ -17,16 +19,16 @@ public class Accessor {
         return instance;
     }
 
-    public Object getValue(String key) throws NullPointerException {
+    public Object getValue(String key) throws NonexistentVariableException {
         for (HashMap<String, Object> values: stored.values()) {
             if (values.get(key) != null) {
                 return values.get(key);
             }
         }
-        throw new NullPointerException("Variable "+key+" does not exist!");
+        throw new NonexistentVariableException("Variable "+key+" does not exist!");
     }
 
-    public Types getType(String key) {
+    public Types getType(String key) throws NonexistentVariableException {
         Types currentType = null;
         for (Types keys: stored.keySet()) {
             currentType = keys;
@@ -34,10 +36,10 @@ public class Accessor {
                return currentType;
            }
         }
-        throw new NullPointerException("Variable "+key+" does not exist!");
+        throw new NonexistentVariableException("Variable "+key+" does not exist!");
     }
 
-    public boolean doesExist(String key) {
+    public boolean doesExist(String key) throws NonexistentVariableException {
         try {
             getValue(key);
             return true;
@@ -46,12 +48,12 @@ public class Accessor {
         }
     }
 
-    public void syntaxChecker(String key) throws IllegalArgumentException {
-        if (!namingRestrictionPattern.matcher(key).matches()) throw new IllegalArgumentException("Variable name "+key+" is illegal");
-        for (String keyword : illegalKeywords) if (key.equals(keyword)) throw new IllegalArgumentException("Variable name "+key+" overlaps with keyword table!");
+    public void syntaxChecker(String key) throws IllegalVariableNameException {
+        if (!namingRestrictionPattern.matcher(key).matches()) throw new IllegalVariableNameException("Variable name "+key+" is illegal");
+        for (String keyword : illegalKeywords) if (key.equals(keyword)) throw new IllegalVariableNameException("Variable name "+key+" overlaps with keyword table!");
     }
 
-    public void declare(String type, String key) throws ParseException {
+    public void declare(String type, String key) throws ParseException, IllegalVariableNameException, NonexistentVariableException {
         syntaxChecker(key);
         String defaultValue = null;
         switch (type) {
@@ -64,7 +66,7 @@ public class Accessor {
         storeValue(type, key, defaultValue);
     }
 
-    public void storeValue(String type, String key, String value) throws ParseException, IllegalArgumentException {
+    public void storeValue(String type, String key, String value) throws ParseException, IllegalVariableNameException, NonexistentVariableException {
         syntaxChecker(key);
         try {
             getValue(key);
@@ -105,7 +107,7 @@ public class Accessor {
         }
     }
 
-    public Object overWriteValue(String key, Object value) throws ParseException {
+    public Object overWriteValue(String key, Object value) throws ParseException, NonexistentVariableException {
         try {
             switch (getType(key)) {
                 case BYTE -> Byte.parseByte(value.toString());
@@ -125,7 +127,7 @@ public class Accessor {
         }
     }
 
-    public void removeValue(String key) {
+    public void removeValue(String key) throws NonexistentVariableException {
         if (doesExist(key)) {
             stored.get(getType(key)).remove(key);
         } else {
@@ -133,7 +135,7 @@ public class Accessor {
         }
     }
 
-    public Object compoundModification(String key, CompoundAssignmentTypes type, String quantity, boolean eagerWriting) throws ParseException, ArithmeticException {
+    public Object compoundModification(String key, CompoundAssignmentTypes type, String quantity, boolean eagerWriting) throws ParseException, ArithmeticException, NonexistentVariableException, CompoundAssignmentException {
         double original;
         double modified;
         switch(getType(key)) {
@@ -173,23 +175,23 @@ public class Accessor {
                         assignStringValue(getValue(key).toString(), quantity, type)
                 );
                 return getValue(key);
-            case BOOL: throw new IllegalArgumentException("Cannot perform CompoundAssignment on @bool type!");
-            default: throw new IllegalArgumentException("Nonexistent CompoundAssignment chosen!");
+            case BOOL: throw new CompoundAssignmentException("Cannot perform CompoundAssignment on @bool type!");
+            default: throw new CompoundAssignmentException("Nonexistent CompoundAssignment chosen!");
         }
     }
 
-    private double assignNumericValue(double value, double quantity, CompoundAssignmentTypes type) throws IllegalArgumentException {
+    private double assignNumericValue(double value, double quantity, CompoundAssignmentTypes type) throws CompoundAssignmentException {
         switch (type) {
             case ADD -> { return value + quantity; }
             case SUBTRACT -> { return value - quantity; }
             case MULTIPLY -> { return value * quantity; }
             case DIVIDE -> { return value / quantity; }
             case MODULO -> { return value % quantity; }
-            default -> throw new IllegalArgumentException("Nonexistent CompoundAssignment chosen!");
+            default -> throw new CompoundAssignmentException("Nonexistent CompoundAssignment chosen!");
         }
     }
 
-    private String assignStringValue(String value, String assignable, CompoundAssignmentTypes type) throws IllegalArgumentException {
+    private String assignStringValue(String value, String assignable, CompoundAssignmentTypes type) throws CompoundAssignmentException {
         StringBuilder bldr = new StringBuilder();
         switch (type) {
             case ADD -> {
@@ -198,9 +200,9 @@ public class Accessor {
                 return bldr.toString();
             }
             case SUBTRACT, MULTIPLY, DIVIDE, MODULO -> {
-                throw new IllegalArgumentException("Type @string cannot implement CompoundAssignment: "+type);
+                throw new CompoundAssignmentException("Type @string cannot implement CompoundAssignment: "+type);
             }
-            default -> throw new IllegalArgumentException("Nonexistent CompoundAssignment chosen!");
+            default -> throw new CompoundAssignmentException("Nonexistent CompoundAssignment chosen!");
         }
     }
 

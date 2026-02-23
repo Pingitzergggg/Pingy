@@ -31,7 +31,7 @@ public class Evaluator {
         this.logContent = logContent;
     }
 
-    public String eval() throws ParseException {
+    public String eval() throws ParseException, NonexistentVariableException, CompoundAssignmentException {
         if (logContent) {
             debugStream.printToDebugStream("Main poblem: "+problem+"\n");
         }
@@ -70,7 +70,7 @@ public class Evaluator {
         }
     }
 
-    private void problemStripper(String problem) throws ParseException {
+    private void problemStripper(String problem) throws ParseException, NonexistentVariableException, CompoundAssignmentException {
         String[] iterable = problem.split("");
         StringBuilder currentValue = new StringBuilder();
         boolean doesVariableKeyContainNumericOrBooleanValue = false;
@@ -173,7 +173,7 @@ public class Evaluator {
         }
     }
 
-    private int nestedExpressionExtractor(int index, String[] iterable) throws ParseException, ArithmeticException {
+    private int nestedExpressionExtractor(int index, String[] iterable) throws ParseException, ArithmeticException, NonexistentVariableException, CompoundAssignmentException {
         StringBuilder currentValue = new StringBuilder();
         int unresolvedParenthesesPairs = 0;
         for (int i = index+1; i < iterable.length; i++) {
@@ -201,7 +201,7 @@ public class Evaluator {
         throw new ArithmeticException("Unclosed parentheses found");
     }
 
-    private void nonMatchedOperatorExtractor(String key) throws NullPointerException, ParseException {
+    private void nonMatchedOperatorExtractor(String key) throws NullPointerException, ParseException, NonexistentVariableException, CompoundAssignmentException {
         Pattern variableOperatorPassThroughPattern = Pattern.compile("[a-zA-Z0-9_]");
         String[] keySequence = key.split("");
         StringBuilder bldr = new StringBuilder();
@@ -268,7 +268,7 @@ public class Evaluator {
         }
     }
 
-    private void variableExtractor(String key) throws ParseException {
+    private void variableExtractor(String key) throws ParseException, NonexistentVariableException, CompoundAssignmentException {
         String[] allowedOperators = {"+", "-"};
         CompoundAssignmentTypes compoundMode = null;
         boolean eagerWriting = false;

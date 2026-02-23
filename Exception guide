@@ -1,0 +1,3 @@
+NonexistentVariableException -> thrown when variable doesnt exist in Accessor
+IllegalArgumentException -> thrown in Accessor when key syntax isn't matching
+ParseException -> thrown everywhere, where a type-conversion fails

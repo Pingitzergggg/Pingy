@@ -12,7 +12,7 @@ public class CycleExtractor {
         this.instructions = instructions;
     }
 
-    public void extract() {
+    public void extract() throws UnresolvedClauseException {
         String[] header = instructions.get(index).strip().split(" ");
         StringBuilder condition = new StringBuilder();
         for (int i = 1; i < header.length; ++i) {

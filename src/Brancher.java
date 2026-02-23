@@ -7,7 +7,7 @@ public class Brancher {
     private final int index;
     private boolean executionToken = false;
 
-    public Brancher(int index, LinkedList<String> instructions) {
+    public Brancher(int index, LinkedList<String> instructions) throws UnresolvedClauseException {
         BranchExtractor extractor = new BranchExtractor(index, instructions);
         extractor.extract();
         System.out.println(extractor.getOutput());
@@ -21,16 +21,12 @@ public class Brancher {
         }
     }
 
-    public void execute() throws RuntimeException, InterruptedException {
+    public void execute() throws ParseException, InterruptedException, CompoundAssignmentException, NonexistentVariableException {
         for (HashMap<String, Object> subBranch : branch) {
             if (subBranch.get("condition") != null) {
                 Evaluator condition = new Evaluator(subBranch.get("condition").toString());
-                try {
-                    if (Boolean.parseBoolean(condition.eval())) {
-                        executionToken = true;
-                    }
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                if (Boolean.parseBoolean(condition.eval())) {
+                    executionToken = true;
                 }
             } else {
                 executionToken = true;
